@@ -1,4 +1,4 @@
-(function(xcarUI,Tools){
+(function(X){
 	
 	
 	  //效果管理，单例实现。
@@ -47,7 +47,7 @@
 	*/
 
 	//构造函数
-	var Focus=xcarUI.Focus=function (options){		
+	var Focus=X.Focus=function (options){		
 		this._focusItems=options.items||[];//焦点项为数组
 		this._callBackFn=options.callBackFn||function(){};//回调函数每次变化后调用
 		this._effect=Focus.Effects.get(options.effect||"def");//效果函数，用于焦点切换时的效果
@@ -58,12 +58,10 @@
 		this._interval=null;		
 		this.init();
 	}
-	Tools.mix(Focus,Tools);
-	
-	Tools.mix(Focus,{'Effects':Effects});
-	
+	X.mix(Focus,X);	
+	X.mix(Focus,{'Effects':Effects});	
 	//原型对象
-	Tools.mix(Focus.prototype,{
+	X.mix(Focus.prototype,{
 		constructor:Focus,//指明构造函数
 		init:function(){
 			this._effect.init(this._focusItems);
@@ -124,4 +122,4 @@
 		}
 			
 	})
-})(xcarUI,xcarUI.Tools)
+})(xcarUI)

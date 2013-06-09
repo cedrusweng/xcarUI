@@ -1,4 +1,4 @@
-(function(xcarUI){
+(function(X){
 	/* 
 			工具方法
 			主要有
@@ -9,11 +9,16 @@
 			each       数组遍历，回调函数操作
 			debug      调试用
 	*/
-	xcarUI.Tools=(function(undefined){
+	X.Tools=(function(undefined){
 		var doc=this.document;
 		//简单封装了document.getElementById方法
 		var $=function(id){
 			return doc.getElementById(id);	
+		}
+		var $$=function(tag,context){
+			var tag=tag||'*';
+			var context=context||document;
+			return context.getElementsByTagName(tag);
 		}
 		//创建标签，未使用
 		var createEl=function(tag){
@@ -113,18 +118,41 @@
 				dest[name]=src[name];	
 			}	
 		}
+		//添加事件
+		function addEvent(o,ev,fn){
+			if(o.addEventListener){
+				addEvent=function(o,ev,fn){
+					o.addEventListener(ev,fn,false);	
+				}	
+			}else if(o.attachEvent){
+				addEvent=function(o,ev,fn){
+					o.attachEvent('on'+ev,fn);	
+				}	
+			}else{
+				addEvent=function(o,ev,fn){
+					o['on'+ev]=fn;
+				}	
+			}
+			addEvent(o,ev,fn);
+		}
+		
+		
+		
 		//返回接口函数
 		return {
+			each:each,
+			debug:debug,
+			mix:mix,
+			
 			$:$,
-			createEl:createEl,
-			anim:anim,
+			$$:$$,
+			createEl:createEl,			
 			getCss:getCss,
 			setCss:setCss,
 			setCssObj:setCssObj,
-			each:each,
-			debug:debug,
-			mix:mix	
+			addEvent:addEvent,
+			anim:anim
 		}
-	})()
-
+	})()	
+	X.Tools.mix(X,X.Tools);
 })(xcarUI)
