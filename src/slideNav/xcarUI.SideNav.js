@@ -1,5 +1,5 @@
 (function(X){
-	//»¬¿éĞ§¹û
+	// ç”¨äºå¯¼èˆªæ»‘å—çš„æ•ˆæœ
 	var slideNav=X.SlideNav=function(opts){
 		this.defaultOption={
 			navItems:[],
