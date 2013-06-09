@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>无标题文档</title>
+<script src="../../src/xcarUI.js"></script>
+<script src="../../src/xcarUI.Tools.js"></script>
+<script src="../../src/Focus/xcarUI.Focus.js"></script>
+<script src="../../src/Focus/xcarUI.Focus.crossFade.js"></script>
+</head>
+
+<body>
+
+
+
+<style>
+#focus_view{
+	overflow:hidden;
+}
+#focus_view td{
+	height:200px;
+}
+
+</style>
+<div id="focus_view">
+<table width="500" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td style="background:#f00;">&nbsp;</td>
+    <td style="background:#ff0;">&nbsp;</td>
+    <td style="background:#f0f;">&nbsp;</td>
+    <td style="background:#0f0;">&nbsp;</td>
+    <td style="background:#000;">&nbsp;</td>
+    <td style="background:#00f;">&nbsp;</td>
+  </tr>
+</table>
+</div>
+<button id="focus_prev">上一项</button><button id="focus_next">下一项</button>
+<script>
+//以下为测试代码
+
+var prev=document.getElementById("focus_prev");
+var next=document.getElementById("focus_next");
+var focusView=document.getElementById("focus_view");
+var focusItems=focusView.getElementsByTagName("td");
+
+
+
+//声明
+var fos=new Focus({'items':focusItems,effect:'crossFade'});
+//设置切换效果
+
+//后一项
+next.onclick=function(){
+	fos.next();	
+}
+//前一项
+prev.onclick=function(){
+	fos.prev();	
+}
+//停止
+focusView.onmouseover=function(){
+	fos.stop();	
+}
+//播放
+focusView.onmouseout=function(){
+	fos.play();	
+}
+</script>
+
+</body>
+</html>

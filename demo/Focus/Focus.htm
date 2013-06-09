@@ -1,0 +1,426 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>无标题文档</title>
+</head>
+
+<body>
+
+
+
+<style>
+#focus_view{
+	overflow:hidden;
+}
+#focus_view td{
+	height:200px;
+}
+
+</style>
+<div id="focus_view">
+<table width="500" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td style="background:#f00;">&nbsp;</td>
+    <td style="background:#ff0;">&nbsp;</td>
+    <td style="background:#f0f;">&nbsp;</td>
+    <td style="background:#0f0;">&nbsp;</td>
+    <td style="background:#000;">&nbsp;</td>
+    <td style="background:#00f;">&nbsp;</td>
+  </tr>
+</table>
+</div>
+<button id="focus_prev">上一项</button><button id="focus_next">下一项</button>
+
+<script>
+/* 
+		工具方法
+		主要有
+		anim 动画函数
+		getCss     获取CSS样式值
+		setCss     设置CSS样式值
+		setCssObj  对象形式设置CSS样式值
+		each       数组遍历，回调函数操作
+		debug      调试用
+*/
+
+var Tools=(function(undefined){
+	var doc=this.document;
+	//简单封装了document.getElementById方法
+	var $=function(id){
+		return doc.getElementById(id);	
+	}
+	//创建标签，未使用
+	var createEl=function(tag){
+		return doc.createElement(tag);	
+	}
+	//动画函数
+	var anim=function(el,attr,time,callFn){
+		if(typeof el==="string")el=$(el);
+		time=time||800;
+		var start=new Date();
+		var old={};
+		var name;
+		for(name in attr){
+			old[name]=parseInt(getCss(el,name))||0;			
+		}
+		(function step(){
+			var diffTime=(new Date())-start;
+			var rate=diffTime/time;
+			for(var name in old){
+				var val=old[name]+rate*(attr[name]-old[name]);
+				setCss(el,name,val);
+			}
+			
+			if(rate<1){
+				setTimeout(function(){step();},Math.min(20,time-diffTime));
+			}else{
+				for(names in attr){
+					setCss(el,names,attr[names]);
+				}
+				callFn&&callFn.call(el);
+			}
+			
+		})()
+	}
+	//未处理IE下透明的获取问题
+	function getCss(el,name){
+		if(document.defaultView&&document.defaultView.getComputedStyle){
+			return document.defaultView.getComputedStyle(el,null)[name];	
+		}else if(el.currentStyle){
+			return el.currentStyle[name];	
+		}
+		return 0;
+	}
+	//未处理IE下透明的设置问题
+	var setCss=(function(){
+		var	cssNumber={//jQuery里的
+			"fillOpacity": true,
+			"fontWeight": true,
+			"lineHeight": true,
+			"opacity": true,
+			"orphans": true,
+			"widows": true,
+			"zIndex": true,
+			"zoom": true
+		}
+		var pxs={
+			'width':true,
+			'height':true,
+			'left':true,
+			'right':true,
+			'top':true,
+			'bottom':true,
+			'marginLeft':true,
+			'marginTop':true			
+		}
+		return function(el,name,val){
+			var units=cssNumber[name]?'':pxs[name]?'px':'';
+			el.style[name]=val+units;
+			debug("el.style["+name+"]="+val+units)
+		}
+	})()
+	/*/当传入为样式对象
+		cssObj={
+			width:100,
+			height:200,
+			display:'block'
+		}
+	*/
+	function setCssObj(el,cssObj){
+		for(var name in cssObj){
+			this.setCss(el,name,cssObj[name]);	
+		}	
+	}
+	//遍历数组
+	function each(arr,fn){
+		for(var i=0,len=arr.length;i<len;i++){
+			fn.call(arr[i],i,arr[i],arr);	
+		}
+	}
+	//调试用
+	function debug(msg){
+		//console.log(msg);	
+	}
+	//直接混合对象
+	function mix(dest,src){
+		for(var name in src){
+			dest[name]=src[name];	
+		}	
+	}
+	//返回接口函数
+	return {
+		$:$,
+		createEl:createEl,
+		anim:anim,
+		getCss:getCss,
+		setCss:setCss,
+		setCssObj:setCssObj,
+		each:each,
+		debug:debug,
+		mix:mix	
+	}
+})()
+
+//效果管理，单例实现。
+var Effects=(function(){
+	var effects={};
+	//添加默认方法
+	effects["def"]={			
+			init:function(arr){
+				Focus.each(arr,function(i){
+					Focus.setCss(arr[i],'display','none');						
+				})
+				Focus.setCss(arr[0],'display','');
+			},
+			exec:function(index,arr){
+				var that=this;	
+				Focus.each(arr,function(i){
+					Focus.setCss(arr[i],'display','none');			
+				})
+				arr[index].style.display="";				
+			}
+	}
+	
+	return{//返回 效果类管理方法
+		add:function(name,effectObj){
+			effects[name]=effectObj;	
+		},
+		get:function(name){
+			if(!name||!(name in effects)){
+				return effects["def"];
+			}
+			return effects[name];	
+		},
+		del:function(name){
+			delete effects[name];	
+		}
+	}
+})()
+	
+/*
+	此焦点图代码用于示例，完成基本的演示功能，对于其它附加功能，在这里不与提供。
+	代码未经过全面的测试，如有需要使用者请自行修改并测试。
+
+	js代码：
+	"_"：为私有属性，方法
+	
+*/
+	
+//构造函数
+function Focus(options){
+	this._focusItems=options.items||[];//焦点项为数组
+	this._callBackFn=options.callBackFn||function(){};//回调函数每次变化后调用
+	this._effect=Focus.Effects.get(options.effect||"def");//效果函数，用于焦点切换时的效果
+	this.autoPlay=options.autoPlay||true;
+	this._speed=options.speed||3000;
+	
+	this._currentIndex=0;//当前的焦点索引
+	this._interval=null;		
+	this.init();
+}
+Tools.mix(Focus,Tools);
+Tools.mix(Focus,{'Effects':Effects});
+//原型对象
+Tools.mix(Focus.prototype,{
+	constructor:Focus,//指明构造函数
+	init:function(){
+		this._effect.init(this._focusItems);
+		if(this.autoPlay){
+			this.play();
+		}
+	},
+	addFousItem:function(obj){//添加焦点项 public
+		if(!obj)return;
+		if(typeof obj==="string"){
+			obj=document.getElementById(obj);	
+		}
+		this._focusItem.push(obj);	
+	},setEffect:function(name){
+		this._effectFn=Focus.Effects.get(name);
+	},
+	size:function(){//返回当前焦点项总长度
+		return this._focusItems.length;	
+	},
+	_check:function(num){//检查边界
+		return num<this.size()&&num>=0;	
+	},
+	getCurrentIndex:function(){//返回当前索引
+		return this._currentIndex;	
+	},
+	setIndex:function(num){//num 在边界内则设置
+		if(this._check(num)){
+			this._currentIndex=num;
+		}
+	},
+	goto:function(num){//设置到达的焦点项
+		this.setIndex(num);
+		this._effect.exec(this._currentIndex,this._focusItems);
+		this._callBackFn&&this._callBackFn.call(this,this._currentIndex,this._focusItems);			
+	},
+	prev:function(){//下一焦点项
+		var curIndex=this.getCurrentIndex();
+		curIndex--;
+		if(!this._check(curIndex)){
+			curIndex=this.size();				
+			curIndex--;
+		}
+		
+		this.goto(curIndex);
+	},
+	next:function(){//上一焦点项
+		var curIndex=this.getCurrentIndex();
+		curIndex++;			
+		if(!this._check(curIndex)){				
+			curIndex=0;
+		}
+		this.goto(curIndex);	
+	},
+	play:function(){
+		var that=this;
+		that._interval=	setInterval(function(){that.next()},that._speed)
+	},
+	stop:function(){
+		this._interval&&clearInterval(this._interval)		
+	}
+		
+})
+	
+	
+
+
+
+
+
+/* 
+effectObj效果对象包含两个方法
+接口：
+	init 对焦点图初始化使用，传入focusItems项的集合
+	exec 运行效果，效果针对当前项，传入参数index索引值，focusItems项集合	
+*/
+
+
+
+/*
+	添加crossFade 渐隐渐现效果
+*/
+Focus.Effects.add("crossFade",{
+	isExeced:false,
+	init:function(arr){
+		Focus.each(arr,function(i){
+			Focus.setCss(arr[i],'display','none');							
+		})
+		Focus.setCss(arr[0],'display','');
+	},
+	exec:function(index,arr){
+		var that=this;					
+		if(!that.isExeced){
+			Focus.each(arr,function(i){
+				Focus.setCss(arr[i],'display','none');						
+			})
+			Focus.setCssObj(arr[index],{'display':'','opacity':'0'})
+			that.isExeced=true;
+			Focus.anim(arr[index],{"opacity":1},500,function(){
+				that.isExeced=false;
+			});
+		}		
+	}
+})
+
+/*
+	添加slider 滚动效果
+*/
+Focus.Effects.add("slider",{
+	isExeced:false,
+	width:500,
+	height:200,
+	root:"focus_view",
+	direct:'left',
+	init:function(arr){
+		var that=this;
+		var root=Focus.$(that.root);
+		Focus.each(arr,function(i){
+			Focus.setCssObj(arr[i],{
+				'position':'absolute',
+				'left':1000,
+				'display':'block',
+				'width':that.width,
+				'height':that.height
+			})
+		})
+		arr[0].style.left="0";
+		Focus.setCssObj(root,{
+			'position':'relative',
+			'overflow':'hidden',
+			'display':'block',
+			'width':that.width,
+			'height':that.height
+		})		
+	},
+	exec:function(index,arr){
+		var that=this;					
+		if(!that.isExeced){
+			Focus.each(arr,function(i){
+				Focus.setCssObj(arr[i],{
+					'zIndex':0,
+					'display':'none'
+				});						
+			})
+			
+			Focus.setCss(arr[(index==0?arr.length:index)-1],'display','');
+			Focus.setCssObj(arr[index],{
+					'zIndex':5,
+					'display':'',
+					'left':(that.direct=="left"?1:-1)*that.width
+			});				
+			that.isExeced=true;
+			Focus.anim(arr[index],{"left":0},500,function(){
+				that.isExeced=false;
+			});
+			
+			
+		}		
+	}
+})
+
+</script>
+
+<script>
+
+//测试用，只完成基本测试，后期会陆续添加一些效果，并对上面的代码进行扩展
+/*var co=document.getElementById("focus_view")
+Focus.Anim(co,{'width':0},500);*/
+//alert(Focus.getCss(co,"opacity"))
+
+//console.log(Focus.Effects)
+//以下为测试代码
+
+var prev=document.getElementById("focus_prev");
+var next=document.getElementById("focus_next");
+
+var focusView=document.getElementById("focus_view");
+var focusItems=focusView.getElementsByTagName("td");
+//声明
+var fos=new Focus({'items':focusItems,effect:'crossFade'});
+//设置切换效果
+
+//后一项
+next.onclick=function(){
+	fos.next();	
+}
+//前一项
+prev.onclick=function(){
+	fos.prev();	
+}
+//停止
+focusView.onmouseover=function(){
+	fos.stop();	
+}
+//播放
+focusView.onmouseout=function(){
+	fos.play();	
+}
+</script>
+
+</body>
+</html>

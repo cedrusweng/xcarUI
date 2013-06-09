@@ -15,7 +15,7 @@ Focus.Effects.add("slider",{
 	direct:'left',
 	init:function(arr){
 		var that=this;
-		var root=Focus.$(that.root);
+		var root=Focus.$(that.root);		
 		Focus.each(arr,function(i){
 			Focus.setCssObj(arr[i],{
 				'position':'absolute',
