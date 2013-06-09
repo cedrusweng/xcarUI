@@ -1,4 +1,4 @@
-//效果管理，单例实现。
+(function(){//效果管理，单例实现。
 var Effects=(function(){
 	var effects={};
 	//添加默认方法
@@ -42,9 +42,11 @@ var Effects=(function(){
 	"_"：为私有属性，方法
 	
 */
-	
+var xcarUI=xcarUI||{};
+var Tools=xcarUI.Tools;	
+
 //构造函数
-function Focus(options){
+var Focus=xcarUI.Focus=function (options){
 	this._focusItems=options.items||[];//焦点项为数组
 	this._callBackFn=options.callBackFn||function(){};//回调函数每次变化后调用
 	this._effect=Focus.Effects.get(options.effect||"def");//效果函数，用于焦点切换时的效果
@@ -121,3 +123,4 @@ Tools.mix(Focus.prototype,{
 	}
 		
 })
+})()

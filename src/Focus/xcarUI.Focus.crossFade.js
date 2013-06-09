@@ -6,6 +6,7 @@ effectObj效果对象包含两个方法
 ===========================================================================
 	添加crossFade 渐隐渐现效果
 */
+var Focus=xcarUI.Focus;
 Focus.Effects.add("crossFade",{
 	isExeced:false,
 	init:function(arr){
