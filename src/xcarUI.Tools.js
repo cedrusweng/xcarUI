@@ -86,8 +86,10 @@
 			}
 			return function(el,name,val){
 				var units=cssNumber[name]?'':pxs[name]?'px':'';
+				if(name==='opacity'){
+					el.style.filter='alpha(opacity='+val*100+')';
+				}								
 				el.style[name]=val+units;
-				debug("el.style["+name+"]="+val+units)
 			}
 		})()
 		/*/当传入为样式对象
