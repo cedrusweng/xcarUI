@@ -1,6 +1,6 @@
 xcarUI
 ======
 
-用于xcar专题UI
-    xcarUI.Focus
-    xcarUI.SlideNav
+<h1>用于xcar专题UI</h1>
+    <p>xcarUI.Focus</p>
+    <p>xcarUI.SlideNav</p>
