@@ -10,7 +10,7 @@
 			debug      调试用
 	*/
 	X.Tools=(function(undefined){
-		var doc=this.document;
+		var doc=window.document;
 		//简单封装了document.getElementById方法
 		var $=function(id){
 			return doc.getElementById(id);	
@@ -32,13 +32,19 @@
 			var old={};
 			var name;
 			for(name in attr){
-				old[name]=parseInt(getCss(el,name))||0;			
+				old[name]=parseInt(getCss(el,name))||0;		
+				
 			}
 			(function step(){
 				var diffTime=(new Date())-start;
 				var rate=diffTime/time;
 				for(var name in old){
 					var val=old[name]+rate*(attr[name]-old[name]);
+					if(name=='width'||name=='height'){
+						if(val<0){
+							val=0;	
+						}	
+					}
 					setCss(el,name,val);
 				}
 				
@@ -88,7 +94,7 @@
 				var units=cssNumber[name]?'':pxs[name]?'px':'';
 				if(name==='opacity'){
 					el.style.filter='alpha(opacity='+val*100+')';
-				}								
+				}
 				el.style[name]=val+units;
 			}
 		})()
@@ -138,14 +144,30 @@
 			addEvent(o,ev,fn);
 		}
 		
-		
+		//获取offetLeft,offsetTop,offsetWidth,offsetHeight
+		function offset(obj){
+			var left=0,top=0,
+				width=obj.offsetWidth||0,
+				height=obj.offsetHeight||0;
+			while(obj){
+				left+=obj.offsetLeft||0;
+				top+=obj.offsetTop||0;
+				obj=obj.parentNode;
+			}
+			
+			return {
+				left:left,
+				top:top,
+				width:width,
+				height:height
+			}	
+		}
 		
 		//返回接口函数
 		return {
 			each:each,
 			debug:debug,
-			mix:mix,
-			
+			mix:mix,			
 			$:$,
 			$$:$$,
 			createEl:createEl,			
@@ -153,7 +175,8 @@
 			setCss:setCss,
 			setCssObj:setCssObj,
 			addEvent:addEvent,
-			anim:anim
+			anim:anim,
+			offset:offset
 		}
 	})()	
 	X.Tools.mix(X,X.Tools);
