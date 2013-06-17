@@ -51,7 +51,7 @@
 								 })
 	
 */
-(function($){
+(function(X){
 	function Zoom(opts){
 		this.zoom=opts.zoom;
 		this._hasZoom=false;
@@ -70,29 +70,29 @@
 		init:function(){
 			var that=this;
 			if(that.previewBox)that.previewBox.style.display='none';
-			$.addEvent(that.zoom,'mouseover',function(e){
+			X.addEvent(that.zoom,'mouseover',function(e){
 					that.attach(e)
 			})
-			$.addEvent(that.zoom,'mousemove',function(e){
+			X.addEvent(that.zoom,'mousemove',function(e){
 					that.move(e)
 			})
-			$.addEvent(that.zoom,'mouseout',function(e){
+			X.addEvent(that.zoom,'mouseout',function(e){
 					that.detach(e)
 			})
 		},
 		createViewImg:function(bigImgSrc){
 			var that=this,
 				bigImg=new Image,
-				zoomOffset=$.offset(that.zoom);		
+				zoomOffset=X.offset(that.zoom);		
 			bigImg.src=bigImgSrc;
 			that._wRange=bigImg.width/zoomOffset.width;			
 			that._hRange=bigImg.height/zoomOffset.height;
 			that._imgOriginPoint[0]=zoomOffset.left;
 			that._imgOriginPoint[1]=zoomOffset.top;
 			if(!that.previewBox){
-				that.previewBox=$.createEl('div');
+				that.previewBox=X.createEl('div');
 				document.body.appendChild(that.previewBox);					
-				$.setCssObj(that.previewBox,{
+				X.setCssObj(that.previewBox,{
 							width:zoomOffset.width,
 							height:zoomOffset.height,
 							overflow:'hidden',
@@ -101,7 +101,7 @@
 							top:that._imgOriginPoint[1]+that.top
 							})
 			}else{
-				$.setCssObj(that.previewBox,{
+				X.setCssObj(that.previewBox,{
 							display:'block',
 							overflow:'hidden',
 							position:'absolute',
@@ -121,8 +121,8 @@
 			var scrollTop=Math.max(document.body.scrollTop,document.documentElement.scrollTop);
 			that._mouseRelativePoint[0]=(eLeft-that._imgOriginPoint[0]);
 			that._mouseRelativePoint[1]=(eTop-(that._imgOriginPoint[1]-scrollTop));
-			var relativeLeft=that._mouseRelativePoint[0]*that._wRange-$.offset(previewBox).width/2;//以鼠标点为中心点
-			var relativeTop =that._mouseRelativePoint[1]*that._hRange-$.offset(previewBox).height/2;//以鼠标点为中心点
+			var relativeLeft=that._mouseRelativePoint[0]*that._wRange-X.offset(previewBox).width/2;//以鼠标点为中心点
+			var relativeTop =that._mouseRelativePoint[1]*that._hRange-X.offset(previewBox).height/2;//以鼠标点为中心点
 			previewBox.scrollLeft=relativeLeft
 			previewBox.scrollTop=relativeTop;
 		},
@@ -141,5 +141,5 @@
 			this.previewBox.style.display='none';					
 		}
 	}
-	$.mix(xcarUI,{'Zoom':Zoom})
+	X.mix(xcarUI,{'Zoom':Zoom})
 })(xcarUI)
