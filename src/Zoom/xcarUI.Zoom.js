@@ -89,6 +89,10 @@
 			that._hRange=bigImg.height/zoomOffset.height;
 			that._imgOriginPoint[0]=zoomOffset.left;
 			that._imgOriginPoint[1]=zoomOffset.top;
+			bigImg.onload=function(){
+				that._wRange=bigImg.width/zoomOffset.width;			
+				that._hRange=bigImg.height/zoomOffset.height;	
+			}
 			if(!that.previewBox){
 				that.previewBox=X.createEl('div');
 				document.body.appendChild(that.previewBox);					
