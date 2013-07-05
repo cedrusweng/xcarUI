@@ -51,8 +51,9 @@
 		this._focusItems=options.items||[];//焦点项为数组
 		this._callBackFn=options.callBackFn||function(){};//回调函数每次变化后调用
 		this._effect=Focus.Effects.get(options.effect||"def");//效果函数，用于焦点切换时的效果
-		this.autoPlay=options.autoPlay||true;
+		this.autoPlay=!!options.autoPlay;
 		this._speed=options.speed||3000;
+		this._loop=!!options.loop;
 		
 		this._currentIndex=0;//当前的焦点索引
 		this._interval=null;		
@@ -97,16 +98,18 @@
 		},
 		prev:function(){//下一焦点项
 			var curIndex=this.getCurrentIndex();
+			console.log(this._check(curIndex-1))
+			if(!this._check(curIndex-1)&&!this._loop)return;
 			curIndex--;
 			if(!this._check(curIndex)){
 				curIndex=this.size();				
 				curIndex--;
 			}
-			
 			this.goto(curIndex);
 		},
 		next:function(){//上一焦点项
 			var curIndex=this.getCurrentIndex();
+			if(!this._check(curIndex+1)&&!this._loop)return;
 			curIndex++;			
 			if(!this._check(curIndex)){				
 				curIndex=0;
