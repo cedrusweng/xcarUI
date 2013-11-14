@@ -20,7 +20,7 @@
 		frameExec: 执行对应的动画函数
 		addFrame: 添加帧动画
 		playList：遍历执行所有动画
-		enable：应用效果
+		enable：应用效果 a
 */
 
 function scrollFrame(opts){
